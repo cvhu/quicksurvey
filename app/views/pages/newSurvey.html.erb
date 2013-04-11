@@ -1,0 +1,36 @@
+<% content_for :head do%>
+	<script type="text/javascript" charset="utf-8">	
+		$(document).ready(function(){
+			$('#new-survey').hide().fadeIn();
+			$('#new-survey>input[type="submit"]').click(function(e){
+				e.preventDefault();
+				$(this).hide().fadeIn();
+				$.ajax({
+					url: '/api/surveys/create.json',
+					type: 'post',
+					dataType: 'json',
+					data:{
+						title: $('input[name="title"]').val()
+					},
+					beforeSend: function(){
+						loading();
+					},
+					success: function(obj){
+						unloading();
+						if(obj.status=="success"){
+							$(window).load(obj.data.url)
+						}else{
+							alert(obj.message);
+						}
+					}
+				})
+			});
+		})
+	</script>
+<% end %>
+
+<form id="new-survey" action="/api/survey/create.json">
+	<label> Survey Title </label>
+	<input type="text" name="title">
+	<input type="submit">
+</form>

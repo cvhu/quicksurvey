@@ -11,3 +11,8 @@
  *= require_self
  *= require_tree .
  */
+
+
+.loading{
+	opacity: 0.7;
+}

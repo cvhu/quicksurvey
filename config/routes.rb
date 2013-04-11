@@ -1,6 +1,8 @@
 Quicksurvey::Application.routes.draw do
   
-  
+  root :to => 'pages#newSurvey'
+  match 'api/surveys/create' => 'surveys#create'
+  match 'api/surveys/:name/get' => 'surveys#get'
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
