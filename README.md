@@ -2,11 +2,30 @@ QuickSurvey API
 ---------------
 
 Testing API root: http://quicksurvey.heroku.com/api
-== Create new survey ==
-/surveys/create.json?title=[survey title]
-<pre>
-return {
+
+
+<table>
+	<tr>
+		<th> Event </th>
+		<th> Path </th>
+		<th> Params </th>
+		<th> Object </th>
+		<th> Comments </th>
+	</tr>
+	<tr>
+		<td> Create Survey </td>
+		<td> /surveys/create.json</td>
+		<td> 
+			<ul>
+				<li><b>title</b> required</li>
+			</ul>
+		</td>
+		<td> 
+			<pre>
+{
 	status: [success/fail],
 	data: {url: [url for survey listening]}
 }
-</pre>
+			</pre>
+	</tr>		
+</table>
