@@ -1,30 +1,7 @@
 <% content_for :head do%>
 	<script type="text/javascript" charset="utf-8">	
 		$(document).ready(function(){
-			surveyForm.init($('#new-survey'));
-			$('#new-survey>input[type="submit"]').click(function(e){
-				e.preventDefault();
-				$(this).hide().fadeIn();
-				$.ajax({
-					url: '/api/surveys/create.json',
-					type: 'post',
-					dataType: 'json',
-					data:{
-						title: $('input[name="title"]').val()
-					},
-					beforeSend: function(){
-						loading();
-					},
-					success: function(obj){
-						unloading();
-						if(obj.status=="success"){
-							$(window).load(obj.data.url)
-						}else{
-							alert(obj.message);
-						}
-					}
-				})
-			});
+			surveyForm.init($('#new-survey'));			
 		})
 		
 		var surveyForm = {
@@ -97,20 +74,41 @@
 					var options = [];
 					$.each($(v).find('.option'), function(j,u){
 						var option = {
-							
+							content: $(u).find('.option-content').val(),
+							type: 'text'
 						}
-						options.push()
+						options.push(option);
 					});
 					var question = {
 						title: $(v).find('input[name="question-title"]').val(),
 						type: $(v).find('input[name="question-type"]:checked').val(),
 						options: options
 					}
+					questions.push(question);
 				})
 				var data = {
 					title: $('input[name="survey-title"]').val(),
 					questions: questions
 				}
+				
+				$.ajax({
+					url: '/api/surveys/create.json',
+					type: 'post',
+					dataType: 'json',
+					data:data,
+					beforeSend: function(){
+						loading();
+					},
+					success: function(obj){
+						unloading();
+						if(obj.status=="success"){
+							window.location = '/qs/'+obj.data.token;					
+						}else{
+							alert("Error: "+obj.message);
+						}
+						// alert(JSON.stringify(obj));
+					}
+				})
 			}
 		}
 	</script>

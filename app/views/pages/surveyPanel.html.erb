@@ -1,0 +1,63 @@
+<% content_for :head do%>
+	<script type="text/javascript" charset="utf-8">
+		$(document).ready(function(){
+			panel.init($('#panel'));
+		})
+		var panel = {
+			root: null,
+			init: function(r){
+				panel.root = r;
+				$(panel.root).hide();
+				
+				$.ajax({
+					url: '/api/surveys/'+$('#token').text()+'/panel.json',
+					dataType: 'json',
+					beforeSend: function(){
+						loading();
+					},
+					success: function(obj){
+						unloading();
+						if(obj.status=="success"){
+							panel.buildSurvey(obj.data);
+							$(panel.root).fadeIn();
+						}else{
+							alert("Error: "+obj.message);
+						}
+					}
+				})				
+			},
+			buildSurvey: function(data){
+				var survey = $('<div id="panel-survey"></div>').appendTo(panel.root);
+				var title = $('<div id="panel-survey-title"></div>').html(data.title).appendTo(survey);
+				var questions = $('<div class="panel-questions"></div>').appendTo(survey);
+				$.each(data.questions, function(i,v){
+					var question = $('<div class="pannel-question"></div>').appendTo(questions);
+					panel.updateQuestion(question, v);
+				});
+				
+				var qrcode = $('<img>').appendTo(panel.root);
+				var url = window.location.origin + "/ask/"+data.token;
+				qrcode.attr("src", "https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl="+url);
+			},
+			updateQuestion: function(q, v){
+				q.empty();
+				$('<div class="panel-question-title"></div>').html(v.title).appendTo(q);
+				$('<div class="panel-question-kind"></div>').html(v.kind).appendTo(q);
+				$('<div class="panel-question-total"></div>').html(v.stats.total).appendTo(q);
+				var options = $('<div class="panel-options"></div>').appendTo(q);
+				$.each(v.stats.options, function(i,o){
+					var option = $('<div class="panel-option"></div>').appendTo(options);
+					$('<div class="panel-option-content"></div>').html(o.content).appendTo(option);
+					$('<div class="panel-option-total"></div>').html(o.total).appendTo(option);
+				})
+			}
+		}
+	</script>
+<% end %>
+
+<div id="token" style="display:none;">
+	<%= @survey.token%>
+</div>
+
+<div id="panel">
+</div>

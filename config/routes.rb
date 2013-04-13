@@ -1,8 +1,14 @@
 Quicksurvey::Application.routes.draw do
   
   root :to => 'pages#newSurvey'
+  match 'qs/:token' => 'pages#surveyPanel'
+  
   match 'api/surveys/create' => 'surveys#create'
-  match 'api/surveys/:name/get' => 'surveys#get'
+  match 'api/surveys/:token/panel' => 'surveys#panel'
+  match 'api/questions/:token/stats' => 'questions#stats'
+  
+  match 'api/surveys/:token/ask' => 'surveys#ask'
+  match 'api/questions/:token/answer' => 'questions#answer'
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

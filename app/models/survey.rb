@@ -1,6 +1,7 @@
 class Survey < ActiveRecord::Base
-  attr_accessible :token, :title  
-  include Rails.application.routes.url_helpers  
+  attr_accessible :token, :title      
+  has_many :questions, :dependent => :destroy
+  
   def self.getToken
     list = [('a'..'z'),('0'..'9')].map{|i| i.to_a}.flatten
     token = (0...4).map{list[rand(list.length)]}.join 
@@ -10,8 +11,20 @@ class Survey < ActiveRecord::Base
     return token
   end
   
-  def self.getQRCodeURL
-    return "https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl=asdf"
+  def askData
+    {
+      title: self.title,
+      token: self.token,
+      questions: self.questions.map{|q| q.askData}
+    }
   end
   
+  def statsData
+    {
+      title: self.title,
+      token: self.token,
+      questions: self.questions.map{|q| q.statsData}
+    }
+  end
+    
 end
