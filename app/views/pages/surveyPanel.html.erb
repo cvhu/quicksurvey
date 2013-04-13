@@ -35,21 +35,23 @@
 					panel.updateQuestion(question, v);
 				});
 				
-				var qrcode = $('<img>').appendTo(panel.root);
+				
+				var token = $('<div id="survey-token"></div>').appendTo(panel.root);
+				var qrcode = $('<img>').appendTo(token);
 				var url = window.location.origin + "/ask/"+data.token;
 				qrcode.attr("src", "https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl="+url);
+				$('<div id="survey-token-text"></div>').html('survey token: '+data.token).appendTo(token);
 			},
 			updateQuestion: function(q, v){
 				q.empty();
-				$('<div class="panel-question-title"></div>').html(v.title).appendTo(q);
-				$('<div class="panel-question-kind"></div>').html(v.kind).appendTo(q);
-				$('<div class="panel-question-total"></div>').html(v.stats.total).appendTo(q);
+				$('<div class="panel-question-title"></div>').html("Q: " +v.title).appendTo(q);				$('<div class="panel-question-kind"></div>').html(v.kind).appendTo(q);				
 				var options = $('<div class="panel-options"></div>').appendTo(q);
 				$.each(v.stats.options, function(i,o){
 					var option = $('<div class="panel-option"></div>').appendTo(options);
 					$('<div class="panel-option-content"></div>').html(o.content).appendTo(option);
 					$('<div class="panel-option-total"></div>').html(o.total).appendTo(option);
 				})
+				$('<div class="panel-question-total"></div>').html(v.stats.total).appendTo(q);
 			}
 		}
 	</script>

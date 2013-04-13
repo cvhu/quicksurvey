@@ -107,7 +107,7 @@ API for web creator: http://quicksurvey.heroku.com/api
 		<td> 
 			<ul>
 				<li><b>token</b> required question token, embedded in url</li>
-				<li><b>value</b> required response value</li>
+				<li><b>value</b> required response value: (option token for multiple-choice, plain text for fill-in)</li>
 			</ul>
 		</td>
 		<td> 

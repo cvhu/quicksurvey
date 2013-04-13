@@ -3,7 +3,8 @@
 		$(document).ready(function(){
 			surveyForm.init($('#new-survey'));			
 		})
-		
+		var opi = 0;
+		var optionPlaceholders = ["Alright", "Great!", "Terrible"];
 		var surveyForm = {
 			root: null,
 			init: function(r){
@@ -12,7 +13,7 @@
 				
 				var surveyTitle = $('<div id="survey-title"></div>').appendTo(surveyForm.root);
 				$('<label>Title</label>').appendTo(surveyTitle);
-				$('<input name="survey-title" type="text">').appendTo(surveyTitle);
+				$('<input name="survey-title" type="text" placeholder="SOCIAL101">').appendTo(surveyTitle);
 				
 				var questions = $('<div id="questions"></div>').appendTo(surveyForm.root);
 				surveyForm.addQuestion();
@@ -24,7 +25,7 @@
 				
 				var title = $('<div class="question-title"></div>').appendTo(question);
 				$('<label>Question</label>').appendTo(title);
-				$('<input name="question-title" type="text">').appendTo(title);
+				$('<input name="question-title" type="text"  placeholder="How is it going?">').appendTo(title);
 				
 				var type = $('<div class="question-type"></div>').appendTo(question);
 				var response = $('<div class="question-response"></div>').appendTo(question);
@@ -58,7 +59,8 @@
 			},
 			addOption: function(r){
 				var option = $('<div class="option"></div>').appendTo(r);
-				$('<input type="text" class="option-content">').val('option content').appendTo(option);
+				$('<input type="text" class="option-content">').attr("placeholder", optionPlaceholders[opi]).appendTo(option);
+				opi = (opi+1)%optionPlaceholders.length;
 				$('<a href="#" class="option-remove"></a>').html('remove').appendTo(option).click(function(e){
 					e.preventDefault();
 					$(option).remove();
@@ -115,5 +117,4 @@
 <% end %>
 
 <div id="new-survey">
-	new survey
 </div>
