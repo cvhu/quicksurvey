@@ -1,7 +1,7 @@
 QuickSurvey API
 ---------------
 
-API for web creator: http://quicksurvey.heroku.com/api/surveys
+API for web creator: http://quicksurvey.heroku.com/api
 
 <table>
 	<tr>
@@ -13,10 +13,11 @@ API for web creator: http://quicksurvey.heroku.com/api/surveys
 	</tr>
 	<tr>
 		<td> Create </td>
-		<td> /create.json</td>
+		<td> /surveys/create.json</td>
 		<td> 
 			<ul>
 				<li><b>title</b> required</li>
+				<li><b>questions</b> required (title, type, options)</li>
 			</ul>
 		</td>
 		<td> 
@@ -24,7 +25,7 @@ API for web creator: http://quicksurvey.heroku.com/api/surveys
 {
 	status: [success/fail],
 	data: {
-		name: 
+		token: 
 	}
 }
 			</pre>
@@ -34,10 +35,10 @@ API for web creator: http://quicksurvey.heroku.com/api/surveys
 	</tr>	
 	<tr>
 		<td> Panel </td>
-		<td> /panel.json</td>
+		<td> /surveys/:token/panel.json</td>
 		<td> 
 			<ul>
-				<li><b>name</b> required name for survey</li>
+				<li><b>token</b> required survey token, embedded in url</li>
 			</ul>
 		</td>
 		<td> 
@@ -46,8 +47,8 @@ API for web creator: http://quicksurvey.heroku.com/api/surveys
 	status: [success/fail],
 	data: {
 		title: ,
-		name: ,
-		questions: [{title:, name:, type:, stats: <see "refresh section ">}, ...]
+		token: ,
+		questions: [{title:, token:, type:, stats: <see "refresh section ">}, ...]
 	}
 }
 			</pre>
@@ -57,10 +58,10 @@ API for web creator: http://quicksurvey.heroku.com/api/surveys
 	</tr>
 	<tr>
 		<td> Refresh </td>
-		<td> /refresh.json</td>
+		<td> /questions/:token/refresh.json</td>
 		<td> 
 			<ul>
-				<li><b>name</b> required name for question</li>
+				<li><b>token</b> required question token, embedded in url</li>
 			</ul>
 		</td>
 		<td> 
@@ -76,28 +77,12 @@ API for web creator: http://quicksurvey.heroku.com/api/surveys
 		<td>			
 		</td>
 	</tr>
-</table>
-
--------------------
-
-
-API for web taker: http://quicksurvey.heroku.com/api
-
-
-<table>
 	<tr>
-		<th> Event </th>
-		<th> Path </th>
-		<th> Params </th>
-		<th> Object </th>
-		<th> Comments </th>
-	</tr>
-	<tr>
-		<td> Create </td>
-		<td> /create.json</td>
+		<td> Ask </td>
+		<td> /surveys/:token/ask.json</td>
 		<td> 
 			<ul>
-				<li><b>title</b> required</li>
+				<li><b>token</b> required survey token, embedded in url</li>
 			</ul>
 		</td>
 		<td> 
@@ -105,7 +90,9 @@ API for web taker: http://quicksurvey.heroku.com/api
 {
 	status: [success/fail],
 	data: {
-		name: 
+		title: ,
+		token: ,
+		questions: [{title: , token: , type: , options: [content: , type: , token: ]}]
 	}
 }
 			</pre>
@@ -115,11 +102,12 @@ API for web taker: http://quicksurvey.heroku.com/api
 	</tr>	
 	
 	<tr>
-		<td> Panel </td>
-		<td> /panel.json</td>
+		<td> Answer </td>
+		<td> /questions/:token/answer.json</td>
 		<td> 
 			<ul>
-				<li><b>name</b> required</li>
+				<li><b>token</b> required question token, embedded in url</li>
+				<li><b>value</b> required response value</li>
 			</ul>
 		</td>
 		<td> 
@@ -127,9 +115,7 @@ API for web taker: http://quicksurvey.heroku.com/api
 {
 	status: [success/fail],
 	data: {
-		title: ,
-		name: ,
-		questions: [{title:, name:, type:, stats: <see "refresh section ">}, ...]
+		message: <service feedback to survey takers>
 	}
 }
 			</pre>

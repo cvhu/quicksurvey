@@ -7,8 +7,10 @@ class SurveysController < ApplicationController
       obj[:message] = 'title of the survey is required'
     else
       obj[:status] = 'success'
-      survey = Survey.create(:title => params[:title], :name => Survey.getName())
-      obj[:data] = survey.tiny
+      survey = Survey.create(:title => params[:title], :token => Survey.getToken())
+      obj[:data] = {
+        token: survey.token
+      }
     end
     respond_to do |format|
       format.json {render :json => obj.to_json}

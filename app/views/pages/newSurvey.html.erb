@@ -1,7 +1,7 @@
 <% content_for :head do%>
 	<script type="text/javascript" charset="utf-8">	
 		$(document).ready(function(){
-			$('#new-survey').hide().fadeIn();
+			surveyForm.init($('#new-survey'));
 			$('#new-survey>input[type="submit"]').click(function(e){
 				e.preventDefault();
 				$(this).hide().fadeIn();
@@ -26,11 +26,96 @@
 				})
 			});
 		})
+		
+		var surveyForm = {
+			root: null,
+			init: function(r){
+				surveyForm.root = r;
+				$(surveyForm.root).hide();
+				
+				var surveyTitle = $('<div id="survey-title"></div>').appendTo(surveyForm.root);
+				$('<label>Title</label>').appendTo(surveyTitle);
+				$('<input name="survey-title" type="text">').appendTo(surveyTitle);
+				
+				var questions = $('<div id="questions"></div>').appendTo(surveyForm.root);
+				surveyForm.addQuestion();
+				
+				$(surveyForm.root).fadeIn();
+			},
+			addQuestion: function(){
+				var question = $('<div class="question"></div>').appendTo('#questions');
+				
+				var title = $('<div class="question-title"></div>').appendTo(question);
+				$('<label>Question</label>').appendTo(title);
+				$('<input name="question-title" type="text">').appendTo(title);
+				
+				var type = $('<div class="question-type"></div>').appendTo(question);
+				var response = $('<div class="question-response"></div>').appendTo(question);
+				$('<label>Type</label>').appendTo(type);
+				$('<input type="radio" name="question-type" value="multiple-choice" checked="checked">').appendTo(type).click(function(e){
+					// e.preventDefault();
+					surveyForm.initMC(response);
+				});
+				surveyForm.initMC(response);
+				$('<span>multiple-choice</span>').appendTo(type);
+				$('<input type="radio" name="question-type" value="fill-in">').appendTo(type).click(function(e){
+					// e.preventDefault();
+					surveyForm.initFI(response);
+				});
+				
+				var done = $('<a href="#" class="survey-done"></a>').html('Done').appendTo(question).click(function(e){
+					e.preventDefault();
+					surveyForm.done();
+				});
+				$('<span>fill-in</span>').appendTo(type);
+			},
+			initMC: function(r){
+				$(r).empty();
+				var options = $('<div class="options"></div>').appendTo(r);
+				var add = $('<a href="#" class="add-option"></a>').html('add').appendTo(r).click(function(e){
+					e.preventDefault();
+					surveyForm.addOption(options);
+				});				
+				surveyForm.addOption(options);
+				surveyForm.addOption(options);
+			},
+			addOption: function(r){
+				var option = $('<div class="option"></div>').appendTo(r);
+				$('<input type="text" class="option-content">').val('option content').appendTo(option);
+				$('<a href="#" class="option-remove"></a>').html('remove').appendTo(option).click(function(e){
+					e.preventDefault();
+					$(option).remove();
+				});
+			},
+			initFI: function(r){
+				$(r).empty();				
+				$(r).html("A text field will be sent.");
+			},
+			done: function(){
+				var questions = [];
+				$.each($('.question'), function(i,v){
+					var options = [];
+					$.each($(v).find('.option'), function(j,u){
+						var option = {
+							
+						}
+						options.push()
+					});
+					var question = {
+						title: $(v).find('input[name="question-title"]').val(),
+						type: $(v).find('input[name="question-type"]:checked').val(),
+						options: options
+					}
+				})
+				var data = {
+					title: $('input[name="survey-title"]').val(),
+					questions: questions
+				}
+			}
+		}
 	</script>
 <% end %>
 
-<form id="new-survey" action="/api/survey/create.json">
-	<label> Survey Title </label>
-	<input type="text" name="title">
-	<input type="submit">
-</form>
+<div id="new-survey">
+	new survey
+</div>
