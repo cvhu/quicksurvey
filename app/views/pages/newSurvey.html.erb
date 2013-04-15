@@ -72,20 +72,29 @@
 			},
 			done: function(){
 				var questions = [];
-				$.each($('.question'), function(i,v){
-					var options = [];
-					$.each($(v).find('.option'), function(j,u){
-						var option = {
-							content: $(u).find('.option-content').val(),
-							type: 'text'
+				$.each($('.question'), function(i,v){					
+					var type = $(v).find('input[name="question-type"]:checked').val();
+					if(type=="multiple-choice"){
+						var options = [];
+						$.each($(v).find('.option'), function(j,u){
+							var option = {
+								content: $(u).find('.option-content').val(),
+								type: 'text'
+							}
+							options.push(option);
+						});
+						var question = {
+							title: $(v).find('input[name="question-title"]').val(),
+							type: type,
+							options: options
 						}
-						options.push(option);
-					});
-					var question = {
-						title: $(v).find('input[name="question-title"]').val(),
-						type: $(v).find('input[name="question-type"]:checked').val(),
-						options: options
+					}else{
+						var question = {
+							title: $(v).find('input[name="question-title"]').val(),
+							type: type
+						}
 					}
+					
 					questions.push(question);
 				})
 				var data = {

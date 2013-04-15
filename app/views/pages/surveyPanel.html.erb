@@ -24,7 +24,7 @@
 							alert("Error: "+obj.message);
 						}
 					}
-				})				
+				})
 			},
 			buildSurvey: function(data){
 				var survey = $('<div id="panel-survey"></div>').appendTo(panel.root);
@@ -44,13 +44,24 @@
 			},
 			updateQuestion: function(q, v){
 				q.empty();
-				$('<div class="panel-question-title"></div>').html("Q: " +v.title).appendTo(q);				$('<div class="panel-question-kind"></div>').html(v.kind).appendTo(q);				
+				$('<div class="panel-question-title"></div>').html("Q: " +v.title).appendTo(q);				
+				$('<div class="panel-question-kind"></div>').html(v.kind).appendTo(q);				
 				var options = $('<div class="panel-options"></div>').appendTo(q);
-				$.each(v.stats.options, function(i,o){
-					var option = $('<div class="panel-option"></div>').appendTo(options);
-					$('<div class="panel-option-content"></div>').html(o.content).appendTo(option);
-					$('<div class="panel-option-total"></div>').html(o.total).appendTo(option);
-				})
+				if(v.kind=="multiple-choice"){
+					$.each(v.stats.options, function(i,o){
+						var option = $('<div class="panel-option"></div>').appendTo(options);
+						$('<div class="panel-option-content"></div>').html(o.content).appendTo(option);
+						$('<div class="panel-option-total"></div>').html(o.total).appendTo(option);
+					})
+				}else{
+					$.each(v.stats.responses, function(i,o){
+						var response = $('<div class="panel-option"></div>').appendTo(options);
+						$('<div class="panel-option-content"></div>').html(o.value).appendTo(response);
+						$('<div class="panel-option-total"></div>').html(o.ago).appendTo(response);
+					})
+				}
+				
+				
 				$('<div class="panel-question-total"></div>').html(v.stats.total).appendTo(q);
 			}
 		}

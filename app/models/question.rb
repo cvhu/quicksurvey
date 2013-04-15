@@ -29,6 +29,7 @@ class Question < ActiveRecord::Base
       kind: self.kind,
       stats: {
         total: self.responses.count,
+        responses: self.responses.map{|r| r.statsData},
         options: self.options.map{|o| o.statsData}
       }
     }
