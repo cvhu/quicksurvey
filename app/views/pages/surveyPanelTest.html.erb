@@ -1,0 +1,162 @@
+<% content_for :head do%>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		$(document).ready(function(){
+			redraw()
+			
+			
+		})
+		$(window).resize(function(){
+			redraw();
+		})
+		
+		function redraw(){
+			$('body').empty();
+
+			
+			
+			
+			var width = document.width-90,
+			    height = document.height-80,
+			    radius = (Math.min(width, height)-30) / 2;
+
+			var color = d3.scale.category20();
+
+			var pie = d3.layout.pie()
+			    .sort(null);
+
+			var arc = d3.svg.arc()
+			    .innerRadius(radius - 30)
+			    .outerRadius(radius - 5);
+
+
+			var dataset = [
+				[1,1,1,1],
+				[1,1,2,1],
+				[2,1,2,1],
+				[1,2,3,1],
+				[1,2,4,1],
+				[1,4,8,1],
+				[2,2,15,3]
+			];
+
+			var svg = d3.select("body").append("svg")
+			    .attr("width", width)
+			    .attr("height", height)
+			  .append("g")
+			    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+			var path = svg.selectAll("path")
+			    .data(pie(dataset[0]))
+			  .enter().append("path")
+			    .attr("fill", function(d, i) { return color(i); })
+			    .attr("d", arc)
+			    .each(function(d) { this._current = d; }); // store the initial values
+
+
+			setInterval(function() {
+				// change();
+			  change();
+			  // d3.select("input[value=\"oranges\"]").property("checked", true).each(change);
+			}, 500);
+
+			var c = 0;
+
+
+			function change() {
+			  // clearTimeout(timeout);
+			  path = path.data(pie(dataset[c])); // update the data
+			  c = (c + 1)%(dataset.length);
+			  path.transition().duration(750).attrTween("d", arcTween); // redraw the arcs
+			}
+
+
+			// Store the displayed angles in _current.
+			// Then, interpolate from _current to the new angles.
+			// During the transition, _current is updated in-place by d3.interpolate.
+			function arcTween(a) {
+			  var i = d3.interpolate(this._current, a);
+			  this._current = i(0);
+			  return function(t) {
+			    return arc(i(t));
+			  };
+			}
+			
+			$('<div id="panel-center"></div>').appendTo('body');
+			var d = Math.min($('body').height(),$('body').width())-200;
+			$('#panel-center').css({
+				left: ($('body').width() - d)/2,
+				top: ($('body').height() - d)/2,
+				width: d,
+				height: d
+			})
+		}
+		var panel = {
+			root: null,
+			init: function(r){
+				panel.root = r;
+				$(panel.root).hide();
+				
+				$.ajax({
+					url: '/api/surveys/'+$('#token').text()+'/panel.json',
+					dataType: 'json',
+					beforeSend: function(){
+						loading();
+					},
+					success: function(obj){
+						unloading();
+						if(obj.status=="success"){
+							panel.buildSurvey(obj.data);
+							$(panel.root).fadeIn();
+						}else{
+							alert("Error: "+obj.message);
+						}
+					}
+				})
+			},
+			buildSurvey: function(data){
+				var survey = $('<div id="panel-survey"></div>').appendTo(panel.root);
+				var title = $('<div id="panel-survey-title"></div>').html(data.title).appendTo(survey);
+				var questions = $('<div class="panel-questions"></div>').appendTo(survey);
+				$.each(data.questions, function(i,v){
+					var question = $('<div class="pannel-question"></div>').appendTo(questions);
+					panel.updateQuestion(question, v);
+				});
+				
+				
+				var token = $('<div id="survey-token"></div>').appendTo(panel.root);
+				var qrcode = $('<img>').appendTo(token);
+				var url = window.location.origin + "/ask/"+data.token;
+				qrcode.attr("src", "https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl="+url);
+				$('<div id="survey-token-text"></div>').html('survey token: '+data.token).appendTo(token);
+			},
+			updateQuestion: function(q, v){
+				q.empty();
+				$('<div class="panel-question-title"></div>').html("Q: " +v.title).appendTo(q);				
+				$('<div class="panel-question-kind"></div>').html(v.kind).appendTo(q);				
+				var options = $('<div class="panel-options"></div>').appendTo(q);
+				if(v.kind=="multiple-choice"){
+					$.each(v.stats.options, function(i,o){
+						var option = $('<div class="panel-option"></div>').appendTo(options);
+						$('<div class="panel-option-content"></div>').html(o.content).appendTo(option);
+						$('<div class="panel-option-total"></div>').html(o.total).appendTo(option);
+					})
+				}else{
+					$.each(v.stats.responses, function(i,o){
+						var response = $('<div class="panel-option"></div>').appendTo(options);
+						$('<div class="panel-option-content"></div>').html(o.value).appendTo(response);
+						$('<div class="panel-option-total"></div>').html(o.ago).appendTo(response);
+					})
+				}
+				
+				
+				$('<div class="panel-question-total"></div>').html(v.stats.total).appendTo(q);
+			}
+		}
+	</script>
+<% end %>
+
+<div id="token" style="display:none;">
+	<%= @survey.token%>
+</div>
+

@@ -1,7 +1,14 @@
 <% content_for :head do%>
+    <link href="/assets/nv.d3.css">
+	<script src="/assets/d3.v2.js"> </script>
+		<script src="/assets/nv.d3.js">	</script>
+		<script src="/assets/legend.js"></script>
+		<script src="/assets/pie.js"></script>
+		<script src="/assets/pieChart.js"></script>
+		<script src="/assets/utils.js"> </script>
 	<script type="text/javascript" charset="utf-8">
 		$(document).ready(function(){
-			panel.init($('#panel'));
+			panel.init($('#panel'));			
 		})
 		var panel = {
 			root: null,
@@ -30,29 +37,74 @@
 				var survey = $('<div id="panel-survey"></div>').appendTo(panel.root);
 				var title = $('<div id="panel-survey-title"></div>').html(data.title).appendTo(survey);
 				var questions = $('<div class="panel-questions"></div>').appendTo(survey);
-				$.each(data.questions, function(i,v){
-					var question = $('<div class="pannel-question"></div>').appendTo(questions);
-					panel.updateQuestion(question, v);
-				});
 				
 				
-				var token = $('<div id="survey-token"></div>').appendTo(panel.root);
+				
+				var token = $('<a href="#" id="survey-token"></a>').appendTo(panel.root);
 				var qrcode = $('<img>').appendTo(token);
 				var url = window.location.origin + "/ask/"+data.token;
 				qrcode.attr("src", "https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl="+url);
 				$('<div id="survey-token-text"></div>').html('survey token: '+data.token).appendTo(token);
+				$(token).click(function(e){
+					e.preventDefault();
+					var fullscreen = $('<a href="#" id="fullscreen"></a>').hide().appendTo('body');
+					
+					var qrcodef = $('<img>').appendTo(fullscreen);
+					qrcodef.attr("src", "https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl="+url);
+					$('<div id="fullscreen-token-text"></div>').html(data.token).appendTo(fullscreen);
+					$(fullscreen).fadeIn();
+					
+					$(fullscreen).click(function(e){
+						e.preventDefault()
+						$(this).fadeOut(function(){$(this).remove()});
+					})
+				})
+				$.each(data.questions, function(i,v){
+					var question = $('<div class="pannel-question"></div>').appendTo(questions);
+					panel.updateQuestion(question, v);
+				});
 			},
 			updateQuestion: function(q, v){
 				q.empty();
 				$('<div class="panel-question-title"></div>').html("Q: " +v.title).appendTo(q);				
 				$('<div class="panel-question-kind"></div>').html(v.kind).appendTo(q);				
 				var options = $('<div class="panel-options"></div>').appendTo(q);
+				var pieData = [];
 				if(v.kind=="multiple-choice"){
+					var total = v.stats.total + v.stats.options.length;
 					$.each(v.stats.options, function(i,o){
+						pieData.push({key:o.content, y:(o.total+1)/total});
 						var option = $('<div class="panel-option"></div>').appendTo(options);
 						$('<div class="panel-option-content"></div>').html(o.content).appendTo(option);
 						$('<div class="panel-option-total"></div>').html(o.total).appendTo(option);
 					})
+					
+					var pie = $('<svg id="pie"></svg>').appendTo(panel.root);
+					
+					nv.addGraph(function() {
+					    var width = 400,
+					        height = 400;
+					
+					    var chart = nv.models.pieChart()
+					        .x(function(d) { return d.key })
+					        .y(function(d) { return d.y })
+					        // .showLabels(false)
+					        .values(function(d) { return d })
+					        .color(d3.scale.category10().range())
+					        .width(width)
+					        .height(height);
+					
+					      d3.select("#pie")
+					          .datum([pieData])
+					        .transition().duration(1200)
+					          .attr('width', width)
+					          .attr('height', height)
+					          .call(chart);
+					
+					    chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+					
+					    return chart;
+					});
 				}else{
 					$.each(v.stats.responses, function(i,o){
 						var response = $('<div class="panel-option"></div>').appendTo(options);

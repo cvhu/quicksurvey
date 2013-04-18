@@ -1,5 +1,5 @@
 class Response < ActiveRecord::Base
-  attr_accessible :question_id, :kind, :value
+  attr_accessible :question_id, :kind, :value, :ip, :header
   belongs_to :question
   include ActionView::Helpers::DateHelper    
   def statsData

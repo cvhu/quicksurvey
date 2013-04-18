@@ -2,6 +2,7 @@ Quicksurvey::Application.routes.draw do
   
   root :to => 'pages#newSurvey'
   match 'qs/:token' => 'pages#surveyPanel'
+  match 'qst/:token' => 'pages#surveyPanelTest'
   
   match 'api/surveys/create' => 'surveys#create'
   match 'api/surveys/:token/panel' => 'surveys#panel'

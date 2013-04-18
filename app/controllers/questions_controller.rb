@@ -32,9 +32,28 @@ class QuestionsController < ApplicationController
         obj[:status] = 'fail'
         obj[:message] = 'invalid question token'
       else
-        obj[:status] = 'success'
-        obj[:message] = 'Thank you. Your response has been recorded'
-        Response.create(:question_id => question.id, :value => params[:value], :kind => question.kind)
+        ip = request.remote_ip
+        header = request.headers['HTTP_USER_AGENT'].to_s
+        if Response.where(:header => header, :ip => ip).count > 0
+          obj[:status] = 'fail'
+          obj[:message] = 'Repeated answers are not allowed!'
+        else          
+          if question.kind=="multiple-choice"
+            option = Option.find_by_token(params[:value])
+            if option.nil?
+              obj[:status] = 'fail'
+              obj[:message] = 'invalid option token'
+            else
+              obj[:status] = 'success'
+              obj[:message] = 'Thank you. Your response has been recorded'
+              Response.create(:header => header, :ip => ip, :question_id => question.id, :value => params[:value], :kind => question.kind)
+            end
+          else
+            obj[:status] = 'success'
+            obj[:message] = 'Thank you. Your response has been recorded'
+            Response.create(:header => header, :ip => ip, :question_id => question.id, :value => params[:value], :kind => question.kind)
+          end
+        end
       end
     end
     respond_to do |format|
