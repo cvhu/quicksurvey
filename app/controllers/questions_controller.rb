@@ -34,7 +34,7 @@ class QuestionsController < ApplicationController
       else
         ip = request.remote_ip
         header = request.headers['HTTP_USER_AGENT'].to_s
-        if Response.where(:header => header, :ip => ip).count > 0
+        if question.responses.where(:header => header, :ip => ip).count > 0
           obj[:status] = 'fail'
           obj[:message] = 'Repeated answers are not allowed!'
         else          
