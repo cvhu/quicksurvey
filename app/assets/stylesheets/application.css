@@ -184,3 +184,35 @@ body{
 	height: 400px;
 	width: 400px;
 }
+
+
+
+.grab-quiz{
+	display: inline-block;
+	text-align: center;
+	margin: 5px 10px;
+	background: #74A6BD;
+	padding: 5px 7px;
+	width: 130px;
+	border: #74A6BD 1px;
+}
+
+.submit-answer{
+	display: inline-block;
+	text-align: center;
+	margin: 5px 10px;
+	background: #74A6BD;
+	padding: 5px 7px;
+	width: 250px;
+	border: #74A6BD 1px;
+}
+
+.radio-input{
+    background: #D4E7ED;
+    padding:20px 10px;
+    vertical-align: middle;
+}
+
+.radio-why{
+	vertical-align:top;
+}

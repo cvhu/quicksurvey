@@ -68,43 +68,48 @@
 				q.empty();
 				$('<div class="panel-question-title"></div>').html("Q: " +v.title).appendTo(q);				
 				$('<div class="panel-question-kind"></div>').html(v.kind).appendTo(q);				
-				var options = $('<div class="panel-options"></div>').appendTo(q);
-				var pieData = [];
+				var options = $('<div class="panel-options"></div>').appendTo(q);				
 				if(v.kind=="multiple-choice"){
-					var total = v.stats.total + v.stats.options.length;
+					var pieData = [];
+					var total = v.stats.total;
 					$.each(v.stats.options, function(i,o){
-						pieData.push({key:o.content, y:(o.total+1)/total});
+						if(o.total>0){
+							pieData.push({key:o.content, y:(o.total)/total});
+						}						
 						var option = $('<div class="panel-option"></div>').appendTo(options);
 						$('<div class="panel-option-content"></div>').html(o.content).appendTo(option);
 						$('<div class="panel-option-total"></div>').html(o.total).appendTo(option);
 					})
 					
-					var pie = $('<svg id="pie"></svg>').appendTo(panel.root);
+					if(total > 0){
+						var pie = $('<svg id="pie"></svg>').appendTo(panel.root);
+
+						nv.addGraph(function() {
+						    var width = 400,
+						        height = 400;
+
+						    var chart = nv.models.pieChart()
+						        .x(function(d) { return d.key })
+						        .y(function(d) { return d.y })
+						        // .showLabels(false)
+						        .values(function(d) { return d })
+						        .color(d3.scale.category10().range())
+						        .width(width)
+						        .height(height);
+
+						      d3.select("#pie")
+						          .datum([pieData])
+						        .transition().duration(1200)
+						          .attr('width', width)
+						          .attr('height', height)
+						          .call(chart);
+
+						    chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+
+						    return chart;
+						});
+					}
 					
-					nv.addGraph(function() {
-					    var width = 400,
-					        height = 400;
-					
-					    var chart = nv.models.pieChart()
-					        .x(function(d) { return d.key })
-					        .y(function(d) { return d.y })
-					        // .showLabels(false)
-					        .values(function(d) { return d })
-					        .color(d3.scale.category10().range())
-					        .width(width)
-					        .height(height);
-					
-					      d3.select("#pie")
-					          .datum([pieData])
-					        .transition().duration(1200)
-					          .attr('width', width)
-					          .attr('height', height)
-					          .call(chart);
-					
-					    chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
-					
-					    return chart;
-					});
 				}else{
 					$.each(v.stats.responses, function(i,o){
 						var response = $('<div class="panel-option"></div>').appendTo(options);
