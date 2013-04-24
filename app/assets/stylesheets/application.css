@@ -89,6 +89,10 @@ body{
 	margin: 40px 0px;
 }
 
+.panel-question{
+	position: relative;
+}
+
 .panel-question-title{
 	display: inline-block;
 	font-size: 110%;
@@ -140,6 +144,32 @@ body{
 	margin: 0px;
 }
 
+.panel-option-ago{
+	display: inline-block;
+	font-size: 70%;
+	color: #fff;
+	background: #aaa;
+	padding: 3px 4px;
+	border-radius: 2px;
+	margin-right: 5px;
+	line-height: 10px;
+	text-align: right;
+}
+
+.panel-question-ago{
+	display: inline-block;
+	/*position: absolute;*/
+	font-size: 70%;
+	color: #fff;
+	background: #777;
+	padding: 3px 4px;
+	border-radius: 2px;
+	line-height: 10px;	
+	font-weight: normal;
+	margin-right: 5px;
+	margin-bottom: 10px;
+	text-align: right;
+}
 
 #fullscreen{
 	display: block;

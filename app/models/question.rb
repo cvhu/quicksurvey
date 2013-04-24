@@ -22,6 +22,7 @@ class Question < ActiveRecord::Base
     }
   end
   
+  include ActionView::Helpers::DateHelper    
   def statsData
     {
       title: self.title,
@@ -30,9 +31,19 @@ class Question < ActiveRecord::Base
       stats: {
         total: self.responses.count,
         responses: self.responses.map{|r| r.statsData},
-        options: self.options.map{|o| o.statsData}
+        options: self.options.map{|o| o.statsData},
+        ago: self.lastResponseAgo
       }
     }
+  end
+
+  def lastResponseAgo
+    lr = self.responses.order("created_at DESC").first
+    if lr.nil?
+      return nil
+    else
+      return "#{time_ago_in_words(lr.created_at)} ago"
+    end
   end
   
 end

@@ -1,11 +1,11 @@
 <% content_for :head do%>
     <link href="/assets/nv.d3.css">
 	<script src="/assets/d3.v2.js"> </script>
-		<script src="/assets/nv.d3.js">	</script>
-		<script src="/assets/legend.js"></script>
-		<script src="/assets/pie.js"></script>
-		<script src="/assets/pieChart.js"></script>
-		<script src="/assets/utils.js"> </script>
+	<script src="/assets/nv.d3.js">	</script>
+	<script src="/assets/legend.js"></script>
+	<script src="/assets/pie.js"></script>
+	<script src="/assets/pieChart.js"></script>
+	<script src="/assets/utils.js"> </script>
 	<script type="text/javascript" charset="utf-8">
 		$(document).ready(function(){
 			panel.init($('#panel'));			
@@ -60,7 +60,7 @@
 					})
 				})
 				$.each(data.questions, function(i,v){
-					var question = $('<div class="pannel-question"></div>').appendTo(questions);
+					var question = $('<div class="panel-question"></div>').appendTo(questions);
 					panel.updateQuestion(question, v);
 				});
 			},
@@ -77,11 +77,17 @@
 							pieData.push({key:o.content, y:(o.total)/total});
 						}						
 						var option = $('<div class="panel-option"></div>').appendTo(options);
-						$('<div class="panel-option-content"></div>').html(o.content).appendTo(option);
-						$('<div class="panel-option-total"></div>').html(o.total).appendTo(option);
+						$('<div class="panel-option-content"></div>').html(o.content).appendTo(option);						
+						var ot = $('<div class="panel-option-total"></div>').html(o.total).appendTo(option);
+						if(o.total > 0){
+							$('<div class="panel-option-ago"></div>').html(o.ago).prependTo(ot);
+						}
 					})
+
+					var total_tag = $('<div class="panel-question-total"></div>').html(v.stats.total).appendTo(q);
 					
 					if(total > 0){
+						$('<div class="panel-question-ago"></div>').html(v.stats.ago).prependTo(total_tag);
 						var pie = $('<svg id="pie"></svg>').appendTo(panel.root);
 
 						nv.addGraph(function() {
@@ -119,7 +125,7 @@
 				}
 				
 				
-				$('<div class="panel-question-total"></div>').html(v.stats.total).appendTo(q);
+				
 			}
 		}
 	</script>

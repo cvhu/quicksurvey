@@ -19,12 +19,23 @@ class Option < ActiveRecord::Base
     }
   end
   
+  include ActionView::Helpers::DateHelper    
   def statsData
     {
       content: self.content,
       total: self.responseCount,
-      kind: self.kind
+      kind: self.kind,
+      ago: self.lastResponseAgo
     }
+  end
+
+  def lastResponseAgo
+    lr = self.question.responses.where(:value => self.token).order("created_at DESC").first
+    if lr.nil?
+      return nil
+    else
+      "#{time_ago_in_words(lr.created_at)} ago"
+    end
   end
   
   def responseCount
