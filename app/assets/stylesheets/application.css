@@ -115,6 +115,13 @@ body{
 	font-size: 120%;
 }
 
+.panel-question-total-subtag{
+	display: inline-block;
+}
+
+.panel-option-total-subtag{
+	display: inline-block;
+}
 .panel-option{
 	border: 1px solid #ddd;
 	margin: 5px 0px;

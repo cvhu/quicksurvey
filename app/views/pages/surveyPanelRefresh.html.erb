@@ -7,6 +7,11 @@
 	<script src="/assets/pieChart.js"></script>
 	<script src="/assets/utils.js"> </script>
 	<script type="text/javascript" charset="utf-8">
+		$.fn.refresh = function(value){
+			if($(this).html()!=value){
+				$(this).hide().html(value).fadeIn();
+			}
+		}
 		$(document).ready(function(){
 			panel.init($('#panel'));
 		})
@@ -27,7 +32,7 @@
 						if(obj.status=="success"){
 							panel.buildSurvey(obj.data);
 							$(panel.root).fadeIn();
-							// setInterval(function(){panel.update()}, 5000);
+							setInterval(function(){panel.update()}, 5000);
 						}else{
 							alert("Error: "+obj.message);
 						}
@@ -44,8 +49,14 @@
 						if(obj.status=="success"){
 							$.each(obj.data.questions, function(i,v){
 								if(v.kind=="multiple-choice"){
-									var question = $(".panel-question[token='"+v.token+"']")
-									question.find('.panel-question-total-subtag').first().hide().html(v.stats.total).fadeIn();								
+									var question = $(".panel-question[token='"+v.token+"']");
+									question.find('.panel-question-total-subtag').first().refresh(v.stats.total);
+									question.find('.panel-question-ago').first().refresh(v.stats.ago);
+									$.each(v.stats.options, function(j, u){
+										var option = $(question).find(".panel-option[token='"+u.token+"']");
+										option.find('.panel-option-total-subtag').first().refresh(u.total);
+										option.find('.panel-option-ago').first().refresh(u.ago);
+									})
 								}
 							})								
 						}
@@ -95,9 +106,10 @@
 						if(o.total>0){
 							pieData.push({key:o.content, y:(o.total)/total});
 						}						
-						var option = $('<div class="panel-option"></div>').appendTo(options);
+						var option = $('<div class="panel-option"></div>').attr("token", o.token).appendTo(options);
 						$('<div class="panel-option-content"></div>').html(o.content).appendTo(option);						
-						var ot = $('<div class="panel-option-total"></div>').html(o.total).appendTo(option);
+						var ot = $('<div class="panel-option-total"></div>').appendTo(option);
+						$('<div class="panel-option-total-subtag"></div>').html(o.total).appendTo(ot);
 						if(o.total > 0){
 							$('<div class="panel-option-ago"></div>').html(o.ago).prependTo(ot);
 						}

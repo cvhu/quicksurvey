@@ -23,6 +23,7 @@ class Option < ActiveRecord::Base
   def statsData
     {
       content: self.content,
+      token: self.token,
       total: self.responseCount,
       kind: self.kind,
       ago: self.lastResponseAgo
