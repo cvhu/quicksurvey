@@ -1,8 +1,8 @@
 Quicksurvey::Application.routes.draw do
   
   root :to => 'pages#newSurvey'
-  match 'qs/:token' => 'pages#surveyPanel'
-  match 'qsr/:token' => 'pages#surveyPanelRefresh'
+  match 'qso/:token' => 'pages#surveyPanel'
+  match 'qs/:token' => 'pages#surveyPanelRefresh'
   match 'qst/:token' => 'pages#surveyPanelTest'
   match 'take' => 'pages#surveyTake'
   

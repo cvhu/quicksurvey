@@ -48,16 +48,64 @@
 					success: function(obj){						
 						if(obj.status=="success"){
 							$.each(obj.data.questions, function(i,v){
+								var question = $(".panel-question[token='"+v.token+"']");
+								var question_total = question.find('.panel-question-total-subtag').first();
+								question.find('.panel-question-ago').first().refresh(v.stats.ago);
 								if(v.kind=="multiple-choice"){
-									var question = $(".panel-question[token='"+v.token+"']");
-									question.find('.panel-question-total-subtag').first().refresh(v.stats.total);
-									question.find('.panel-question-ago').first().refresh(v.stats.ago);
+									
+									var pieData = [];
 									$.each(v.stats.options, function(j, u){
 										var option = $(question).find(".panel-option[token='"+u.token+"']");
 										option.find('.panel-option-total-subtag').first().refresh(u.total);
 										option.find('.panel-option-ago').first().refresh(u.ago);
+										if(u.total>0){
+											pieData.push({key:u.content, y:(u.total)/v.stats.total});
+										}	
 									})
+									if($(question_total).html()!=v.stats.total){
+										var pie = $('<svg id="pie"></svg>').appendTo(panel.root);
+										nv.addGraph(function() {
+										    var width = 400,
+										        height = 400;
+
+										    var chart = nv.models.pieChart()
+										        .x(function(d) { return d.key })
+										        .y(function(d) { return d.y })
+										        // .showLabels(false)
+										        .values(function(d) { return d })
+										        .color(d3.scale.category10().range())
+										        .width(width)
+										        .height(height);
+
+										      d3.select("#pie")
+										          .datum([pieData])
+										        .transition().duration(1200)
+										          .attr('width', width)
+										          .attr('height', height)
+										          .call(chart);
+
+										    chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+
+										    return chart;
+										});
+									}									
+								}else{
+									if(v.stats.total>0){
+										var options = question.find(".panel-options").first();
+										$.each(v.stats.responses, function(j, u){
+											if($(question).find(".panel-option[id='"+u.id+"']").length==0){
+												var response = $('<div class="panel-option"></div>').attr("id", u.id).hide().prependTo(options);
+												$('<div class="panel-option-content"></div>').html(u.value).appendTo(response);
+												var option_total = $('<div class="panel-option-total"></div>').appendTo(response);
+												$('<div class="panel-option-ago"></div>').html(u.ago).appendTo(option_total);
+												$(response).fadeIn();
+											}
+
+										})
+									}
+									
 								}
+								$(question_total).refresh(v.stats.total);
 							})								
 						}
 					}
@@ -149,11 +197,18 @@
 					}
 					
 				}else{
-					$.each(v.stats.responses, function(i,o){
-						var response = $('<div class="panel-option"></div>').appendTo(options);
-						$('<div class="panel-option-content"></div>').html(o.value).appendTo(response);
-						$('<div class="panel-option-total"></div>').html(o.ago).appendTo(response);
-					})
+					var total_tag = $('<div class="panel-question-total"></div>').appendTo(q);
+					var total_subtag = $('<div class="panel-question-total-subtag"></div>').html(v.stats.total).appendTo(total_tag);
+					if(v.stats.total > 0){
+						$('<div class="panel-question-ago"></div>').html(v.stats.ago).prependTo(total_tag);
+						$.each(v.stats.responses, function(i,o){
+							var response = $('<div class="panel-option"></div>').attr("id", o.id).appendTo(options);
+							$('<div class="panel-option-content"></div>').html(o.value).appendTo(response);
+							var option_total = $('<div class="panel-option-total"></div>').appendTo(response);
+							$('<div class="panel-option-ago"></div>').html(o.ago).appendTo(option_total);
+						})	
+					}
+					
 				}
 				
 				

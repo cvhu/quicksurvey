@@ -6,6 +6,7 @@ class Response < ActiveRecord::Base
     {
       value: self.value,      
       kind: self.kind,
+      id: self.id,
       ago: "#{time_ago_in_words(self.created_at)} ago"
     }
   end
