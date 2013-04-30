@@ -5,6 +5,9 @@ class PagesController < ApplicationController
   
   def surveyTake
   end
+
+  def surveyTakeToken    
+  end
   
   def surveyPanel
     @survey = Survey.find_by_token(params[:token])

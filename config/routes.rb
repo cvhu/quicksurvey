@@ -5,6 +5,7 @@ Quicksurvey::Application.routes.draw do
   match 'qs/:token' => 'pages#surveyPanelRefresh'
   match 'qst/:token' => 'pages#surveyPanelTest'
   match 'take' => 'pages#surveyTake'
+  match 'take/:token' => 'pages#surveyTakeToken'
   
   match 'api/surveys/create' => 'surveys#create'
   match 'api/surveys/:token/panel' => 'surveys#panel'

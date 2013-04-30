@@ -1,0 +1,114 @@
+<% content_for :head do%>
+<script type = "text/javascript" charset="UTF-8">
+	$(document).ready(function(){
+	 	panel.init($('#panel'));
+	})
+
+		
+	var panel = {
+		root: null,
+		init: function(r){
+			panel.root = r;
+			// $("#button1").click(function(){
+				var quiz = document.getElementById('qToken').value;
+
+		        $.getJSON("/api/surveys/" + quiz + "/ask.json",function(result){
+	       	    	var title = result.data.title;
+			    	var question = result.data.questions[0].title;
+			    	var type = result.data.questions[0].kind;
+			    	var size = result.data.questions[0].options.length;	   	
+			    		       	    	
+        			var title = $('<div id="panel-survey-title"><font size = 5><b>' + title + '</b></font></div></br>').appendTo(panel.root);
+        			var question = $('<div id="panel-survey-question"><font size = 3><b>' + question + '</b></font></div></br>').appendTo(panel.root);
+        			
+        								        			
+					if(type == 'multiple-choice'){
+						for(var i = 0; i < size; i++){
+							var sChoices = $('<div id="response-option" class="radio-input"><input type="radio" class="radio-why" name="test" value=' + result.data.questions[0].options[i].token+ '><span>' + result.data.questions[0].options[i].content + '</span></br></div>').appendTo(panel.root);
+						}	
+						grabQuiz();
+					}
+					
+					if(type == 'fill-in'){
+						var textField = $('<center><div id="response-text"><textarea id="test" name="test" rows="10" cols="80">Answer here</textarea></center></div>').appendTo(panel.root);						
+						grabQuiz();
+					}
+								        			
+        			
+        		});
+        	// });
+        	
+        	$("#button2").click(function(){
+        		
+				var quiz = document.getElementById('qToken').value;
+
+		        $.getJSON("/api/surveys/"+ quiz +"/ask.json",function(result){
+		        	var qToken = result.data.questions[0].token;	
+		        	var qType = result.data.questions[0].kind;
+		        	
+		        	if(qType=='multiple-choice'){
+		        		var token = $('input[@name="test"]:checked').val();
+		        		submission();
+		        	}
+		        	if(qType=='fill-in'){
+		        		var token = document.getElementById('test').value;
+		        		submission();
+		        	}
+		        				        	
+	        		$.ajax({
+	        			url: "/api/questions/" + qToken + "/answer.json?value=" + token,
+	        			dataType: 'json',
+	        			beforeSend: function(){
+
+	        			},
+	        			success: function(obj){
+	        				if(obj.status=="fail"){
+	        					alert(obj.message);
+	        				};
+	        			}
+	        		});			        	
+		        });
+		    });
+		}
+	}
+		
+	function grabQuiz(){
+		$('#quiz').attr('hidden',true);
+		$('#panel').removeAttr('hidden',true);
+		$('#hide').removeAttr('hidden');			
+	}
+	
+	function submission(){
+		$('#panel').attr('hidden',true);
+		$('#hide').attr('hidden',true);
+		$('#thanks').removeAttr('hidden');			
+	}
+
+</script>
+<% end %>
+</br>
+</br>
+<div id="quiz">
+	<center>
+		<font size = "4">Please Enter Your Quiz Token</font>
+	</br></br>
+		<div id="quiz-token"><input type="text" id="qToken" name="qToken" value="<%= params[:token]%>"></div>	
+		<button id="button1" class="grab-quiz">Grab Quiz</button>
+	</center>
+</div>
+</br>
+<div id="panel" hidden="true">
+	
+</div>
+<center>
+	<div id = "hide" hidden="true">
+		<button id="button2" class="submit-answer">Submit Answer</button>
+	</div>
+	<div id="thanks" hidden="true">
+		Thank you for your response!
+	</div>
+</center>
+	
+<div></div>
+
+<div id="token" style="display: none;"><%= params[:token]%></div>

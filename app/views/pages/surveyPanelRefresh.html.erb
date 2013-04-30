@@ -63,6 +63,7 @@
 										}	
 									})
 									if($(question_total).html()!=v.stats.total){
+										$('#pie').remove();
 										var pie = $('<svg id="pie"></svg>').appendTo(panel.root);
 										nv.addGraph(function() {
 										    var width = 400,
@@ -116,13 +117,12 @@
 				var title = $('<div id="panel-survey-title"></div>').html(data.title).appendTo(survey);
 				var questions = $('<div class="panel-questions"></div>').appendTo(survey);
 				
-				
-				
+				var url = window.location.origin + "/take/"+data.token;			
+				$('<a id="survey-token-text" target="_blank" ></a>').attr("href", url).html('Take Survey through: '+url).appendTo(panel.root);
 				var token = $('<a href="#" id="survey-token"></a>').appendTo(panel.root);
 				var qrcode = $('<img>').appendTo(token);
-				var url = window.location.origin + "/ask/"+data.token;
 				qrcode.attr("src", "https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl="+url);
-				$('<div id="survey-token-text"></div>').html('survey token: '+data.token).appendTo(token);
+				
 				$(token).click(function(e){
 					e.preventDefault();
 					var fullscreen = $('<a href="#" id="fullscreen"></a>').hide().appendTo('body');
