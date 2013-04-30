@@ -34,10 +34,10 @@ class QuestionsController < ApplicationController
       else
         ip = request.remote_ip
         header = request.headers['HTTP_USER_AGENT'].to_s
-        if question.responses.where(:header => header, :ip => ip).count > 0
-          obj[:status] = 'fail'
-          obj[:message] = 'Repeated answers are not allowed!'
-        else          
+        # if question.responses.where(:header => header, :ip => ip).count > 0
+        #   obj[:status] = 'fail'
+        #   obj[:message] = 'Repeated answers are not allowed!'
+        # else          
           if question.kind=="multiple-choice"
             option = Option.find_by_token(params[:value])
             if option.nil?
@@ -53,7 +53,7 @@ class QuestionsController < ApplicationController
             obj[:message] = 'Thank you. Your response has been recorded'
             Response.create(:header => header, :ip => ip, :question_id => question.id, :value => params[:value], :kind => question.kind)
           end
-        end
+        # end
       end
     end
     respond_to do |format|

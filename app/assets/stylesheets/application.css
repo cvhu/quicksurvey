@@ -73,6 +73,7 @@ body{
 
 
 #panel{
+	background: #fff;
 	border-radius: 15px;
 	border: #aaa 1px solid;
 	margin: 50px auto;
@@ -252,4 +253,12 @@ body{
 
 .radio-why{
 	vertical-align:top;
+}
+
+#qrcode{
+
+	position: fixed;
+	right: 0px;
+	bottom: 0px;
+	width: 450px;
 }

@@ -17,6 +17,7 @@
 		})
 		var panel = {
 			root: null,
+			chart: null,
 			init: function(r){
 				panel.root = r;
 				$(panel.root).hide();
@@ -59,36 +60,35 @@
 										option.find('.panel-option-total-subtag').first().refresh(u.total);
 										option.find('.panel-option-ago').first().refresh(u.ago);
 										if(u.total>0){
-											pieData.push({key:u.content, y:(u.total)/v.stats.total});
+											pieData.unshift({key:u.content, y:(u.total)/v.stats.total});
 										}	
 									})
 									if($(question_total).html()!=v.stats.total){
-										$('#pie').remove();
-										var pie = $('<svg id="pie"></svg>').appendTo(panel.root);
-										nv.addGraph(function() {
-										    var width = 400,
-										        height = 400;
-
-										    var chart = nv.models.pieChart()
-										        .x(function(d) { return d.key })
-										        .y(function(d) { return d.y })
-										        // .showLabels(false)
-										        .values(function(d) { return d })
-										        .color(d3.scale.category10().range())
-										        .width(width)
-										        .height(height);
-
-										      d3.select("#pie")
-										          .datum([pieData])
+										d3.select("#pie")
+										        .datum([pieData])
 										        .transition().duration(1200)
-										          .attr('width', width)
-										          .attr('height', height)
-										          .call(chart);
+										         .call(panel.chart);
 
-										    chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+										    // chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+										// $('#pie').remove();
+										// var pie = $('<svg id="pie"></svg>').hide().appendTo(panel.root);
+										// nv.addGraph(function() {
+										//     var width = 400,
+										//         height = 400;
 
-										    return chart;
-										});
+										//     var chart = nv.models.pieChart()
+										//         .x(function(d) { return d.key })
+										//         .y(function(d) { return d.y })
+										//         // .showLabels(false)
+										//         .values(function(d) { return d })
+										//         .color(d3.scale.category10().range())
+										//         .width(width)
+										//         .height(height);
+
+										      
+										//     $(pie).fadeIn();
+										//     return chart;
+										// });
 									}									
 								}else{
 									if(v.stats.total>0){
@@ -120,8 +120,8 @@
 				var url = window.location.origin + "/take/"+data.token;			
 				$('<a id="survey-token-text" target="_blank" ></a>').attr("href", url).html('Take Survey through: '+url).appendTo(panel.root);
 				var token = $('<a href="#" id="survey-token"></a>').appendTo(panel.root);
-				var qrcode = $('<img>').appendTo(token);
-				qrcode.attr("src", "https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl="+url);
+				var qrcode = $('<img id="qrcode">').appendTo(token);
+				qrcode.attr("src", "https://chart.googleapis.com/chart?cht=qr&chs=450x450&chl="+url);
 				
 				$(token).click(function(e){
 					e.preventDefault();
@@ -152,7 +152,7 @@
 					var total = v.stats.total;
 					$.each(v.stats.options, function(i,o){
 						if(o.total>0){
-							pieData.push({key:o.content, y:(o.total)/total});
+							pieData.unshift({key:o.content, y:(o.total)/total});
 						}						
 						var option = $('<div class="panel-option"></div>').attr("token", o.token).appendTo(options);
 						$('<div class="panel-option-content"></div>').html(o.content).appendTo(option);						
@@ -182,6 +182,7 @@
 						        .color(d3.scale.category10().range())
 						        .width(width)
 						        .height(height);
+						    panel.chart = chart;
 
 						      d3.select("#pie")
 						          .datum([pieData])
